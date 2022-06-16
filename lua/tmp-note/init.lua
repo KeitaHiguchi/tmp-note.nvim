@@ -20,8 +20,8 @@ local function close_window()
 end
 
 local function note()
-        local width = api.nvim_get_option('columns') / 3
-        local height = api.nvim_get_option('lines') / 3
+        local width = 80
+        local height = 20
         local options = {
                 relative='win', width=width, height=height, bufpos = {20,20}
         }
