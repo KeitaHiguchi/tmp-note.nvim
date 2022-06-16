@@ -5,7 +5,11 @@ local noteFile = 'note.md'
 
 
 local function setup(opts)
-	opts = opts or {}
+	opts = opts or { 
+            options = {
+                    note = "note.md"
+            }
+    }
 	noteFile = opts.options.note
     vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
 end
