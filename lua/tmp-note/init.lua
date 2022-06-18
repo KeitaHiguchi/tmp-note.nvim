@@ -24,13 +24,16 @@ local function close_window()
 end
 
 local function note()
-        local width = 80
-        local height = 20
+        local width = api.nvim_get_option("columns")
+        local height = api.nvim_get_option("lines")
         local options = {
                 relative='win',
-                width=width,
-                height=height,
-                bufpos = {20,20},
+                width= math.ceil(width * 0.7),
+                height= math.ceil(height * 0.7),
+                bufpos = {
+                        math.ceil(height / 2),
+                        math.ceil(width / 2),
+                },
                 border = 'single'
         }
         local buf = api.nvim_create_buf(false, true)
