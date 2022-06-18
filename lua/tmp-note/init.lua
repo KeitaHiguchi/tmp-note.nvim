@@ -5,7 +5,11 @@ local noteFile = 'note.md'
 
 
 local function setup(opts)
-	opts = opts or {}
+	opts = opts or { 
+            options = {
+                    note = "note.md"
+            }
+    }
 	noteFile = opts.options.note
     vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
 end
@@ -20,10 +24,14 @@ local function close_window()
 end
 
 local function note()
-        local width = api.nvim_get_option('columns') / 3
-        local height = api.nvim_get_option('lines') / 3
+        local width = 80
+        local height = 20
         local options = {
-                relative='win', width=width, height=height, bufpos = {20,20}
+                relative='win',
+                width=width,
+                height=height,
+                bufpos = {20,20},
+                border = 'single'
         }
         local buf = api.nvim_create_buf(false, true)
         win = api.nvim_open_win(buf, true, options)
@@ -35,7 +43,7 @@ local function note()
                 vim.fn.append(vim.fn.line('$'), noteHeader)
         end
 
-        vim.cmd(':$')
+        vim.fn.cursor(vim.fn.line('$'), 0)
 
         api.nvim_create_autocmd({ 'BufWinLeave' }, {
                 buffer = buf,
@@ -43,15 +51,29 @@ local function note()
         })
 
         -- to delete
-        local limitTime = os.time() - (30 * 3600)
-        -- search({pattern} [, {flags} [, {stopline} [, {timeout} [, {skip}]]]])
-        local sectionLineNum = 0
+        local limitTime = os.time() - (30 * 24 * 3600)
+        local sectionLineNum, saveSectionLineNum = 0, 0
+
+        saveSectionLineNum = vim.fn.line('.')
+        local headerPattern = '# note on (%d+)-(%d+)-(%d+)'
+
         while vim.fn.search('# note on', 'b', 1) > 0 do
                 sectionLineNum = vim.fn.line('.')
-                -- TODO limit 比較して、古い場合はここでbreakする
+                local year, month, day = vim.fn.getline(sectionLineNum):match(headerPattern)
+                local sectionTime = os.time({
+                        year = year,
+                        month = month,
+                        day = day,
+                })
+                if limitTime > sectionTime then
+                        break
+                end
+                saveSectionLineNum = sectionLineNum
         end
-        vim.cmd(":" .. sectionLineNum .. ",$write!")
-        vim.cmd(":e")
+        vim.cmd(":silent! :" .. saveSectionLineNum .. ",$write!")
+        vim.cmd(":e!")
+        vim.opt.number = false
+        vim.fn.cursor(vim.fn.line('$'), 0)
 end
 
 return {
