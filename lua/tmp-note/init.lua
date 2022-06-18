@@ -3,6 +3,7 @@ local timestamp_format = '%Y-%m-%d'
 local win, buf
 local noteFile = 'note.md'
 
+vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
 
 local function setup(opts)
 	opts = opts or { 
@@ -11,7 +12,6 @@ local function setup(opts)
             }
     }
 	noteFile = opts.options.note
-    vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
 end
 
 local function current_date()
