@@ -27,7 +27,11 @@ local function note()
         local width = 80
         local height = 20
         local options = {
-                relative='win', width=width, height=height, bufpos = {20,20}
+                relative='win',
+                width=width,
+                height=height,
+                bufpos = {20,20},
+                border = 'single'
         }
         local buf = api.nvim_create_buf(false, true)
         win = api.nvim_open_win(buf, true, options)
