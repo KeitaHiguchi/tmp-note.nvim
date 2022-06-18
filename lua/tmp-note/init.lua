@@ -1,17 +1,26 @@
 local api = vim.api
 local timestamp_format = '%Y-%m-%d'
 local win, buf
-local noteFile = 'note.md'
+local config
 
 vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
+
+local function initialize()
+    config = {
+            note = "note.md",
+            keep_days = 30,
+    }
+end
 
 local function setup(opts)
 	opts = opts or { 
             options = {
-                    note = "note.md"
+                    note = "note.md",
+                    keep_days = 30,
             }
     }
-	noteFile = opts.options.note
+    config.note = opts.options.note
+    config.keep_days = opts.options.keep_days
 end
 
 local function current_date()
@@ -38,7 +47,7 @@ local function note()
         }
         local buf = api.nvim_create_buf(false, true)
         win = api.nvim_open_win(buf, true, options)
-        vim.cmd(":edit " .. noteFile)
+        vim.cmd(":edit " .. config.note)
 
         local noteHeader = "# note on "..current_date()
         local found_line = vim.fn.search(noteHeader)
@@ -54,7 +63,7 @@ local function note()
         })
 
         -- to delete
-        local limitTime = os.time() - (30 * 24 * 3600)
+        local limitTime = os.time() - (config.keep_days * 24 * 3600)
         local sectionLineNum, saveSectionLineNum = 0, 0
 
         saveSectionLineNum = vim.fn.line('.')
@@ -78,6 +87,8 @@ local function note()
         vim.opt.number = false
         vim.fn.cursor(vim.fn.line('$'), 0)
 end
+
+initialize()
 
 return {
         setup = setup,
