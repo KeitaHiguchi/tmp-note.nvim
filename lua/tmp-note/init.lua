@@ -46,6 +46,7 @@ local function note()
 
         vim.fn.cursor(vim.fn.line('$'), 0)
 
+        api.nvim_buf_set_keymap(buf, 'n', '<ESC>', ':q<CR>', { noremap = true, silent = true })
         api.nvim_create_autocmd({ 'BufWinLeave' }, {
                 buffer = buf,
                 callback = close_window
