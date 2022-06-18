@@ -1,26 +1,15 @@
 local api = vim.api
 local timestamp_format = '%Y-%m-%d'
-local win, buf
-local config
-
-vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
-
-local function initialize()
-    config = {
-            note = "note.md",
-            keep_days = 30,
-    }
-end
+local win
+local config = {
+        note = "note.md",
+        keep_days = 30,
+}
 
 local function setup(opts)
-	opts = opts or { 
-            options = {
-                    note = "note.md",
-                    keep_days = 30,
-            }
-    }
-    config.note = opts.options.note
-    config.keep_days = opts.options.keep_days
+    for key, value in pairs(opts) do
+        config[key] = value
+    end
 end
 
 local function current_date()
@@ -28,7 +17,7 @@ local function current_date()
 end
 
 local function close_window()
-        vim.cmd(':w')
+        vim.cmd(':silent! :w')
         api.nvim_win_close(win, true)
 end
 
@@ -88,7 +77,7 @@ local function note()
         vim.fn.cursor(vim.fn.line('$'), 0)
 end
 
-initialize()
+vim.cmd(":command! TmpNote lua require'tmp-note'.note()")
 
 return {
         setup = setup,
