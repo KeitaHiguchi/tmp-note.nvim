@@ -43,7 +43,7 @@ local function note()
                 vim.fn.append(vim.fn.line('$'), noteHeader)
         end
 
-        vim.cmd(':$')
+        vim.fn.cursor(vim.fn.line('$'), 0)
 
         api.nvim_create_autocmd({ 'BufWinLeave' }, {
                 buffer = buf,
@@ -51,15 +51,28 @@ local function note()
         })
 
         -- to delete
-        local limitTime = os.time() - (30 * 3600)
-        -- search({pattern} [, {flags} [, {stopline} [, {timeout} [, {skip}]]]])
-        local sectionLineNum = 0
+        local limitTime = os.time() - (30 * 24 * 3600)
+        local sectionLineNum, saveSectionLineNum = 0, 0
+
+        saveSectionLineNum = vim.fn.line('.')
+        local headerPattern = '# note on (%d+)-(%d+)-(%d+)'
+
         while vim.fn.search('# note on', 'b', 1) > 0 do
                 sectionLineNum = vim.fn.line('.')
-                -- TODO limit 比較して、古い場合はここでbreakする
+                local year, month, day = vim.fn.getline(sectionLineNum):match(headerPattern)
+                local sectionTime = os.time({
+                        year = year,
+                        month = month,
+                        day = day,
+                })
+                if limitTime > sectionTime then
+                        break
+                end
+                saveSectionLineNum = sectionLineNum
         end
-        vim.cmd(":" .. sectionLineNum .. ",$write!")
-        vim.cmd(":e")
+        vim.cmd(":silent! :" .. saveSectionLineNum .. ",$write!")
+        vim.cmd(":e!")
+        vim.opt.number = false
 end
 
 return {
