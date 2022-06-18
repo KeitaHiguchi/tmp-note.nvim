@@ -73,6 +73,7 @@ local function note()
         vim.cmd(":silent! :" .. saveSectionLineNum .. ",$write!")
         vim.cmd(":e!")
         vim.opt.number = false
+        vim.fn.cursor(vim.fn.line('$'), 0)
 end
 
 return {
