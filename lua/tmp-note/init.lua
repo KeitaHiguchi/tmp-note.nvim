@@ -37,6 +37,7 @@ local function note()
         local buf = api.nvim_create_buf(false, true)
         win = api.nvim_open_win(buf, true, options)
         vim.cmd(":edit " .. config.note)
+        vim.cmd(":set winblend=10 ")
 
         local noteHeader = "# note on "..current_date()
         local found_line = vim.fn.search(noteHeader)
